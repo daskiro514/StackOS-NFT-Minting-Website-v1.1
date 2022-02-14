@@ -222,12 +222,12 @@ const Dashboard = ({ setAlert }) => {
           <div className='col-md-6'>
             <div className='box-shadow rounded-lg'>
               <div className='row'>
-                <div className='col-md-4 text-center cursor-pointer' onClick={() => setTab('Lottery')}>
+                <div className='col-md-6 text-center cursor-pointer' onClick={() => setTab('Lottery')}>
                   <div className={'p-2 ' + (tab === 'Lottery' ? 'box-shadow-bold' : null)}>
                     Lottery
                   </div>
                 </div>
-                <div className='col-md-4 text-center cursor-pointer' onClick={() => setTab('Auction')}>
+                <div className='col-md-6 text-center cursor-pointer' onClick={() => setTab('Auction')}>
                   <div className={'p-2 ' + (tab === 'Auction' ? 'box-shadow-bold' : null)}>
                     Auction
                   </div>
