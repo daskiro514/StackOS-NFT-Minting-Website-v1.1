@@ -19,6 +19,8 @@ const Dashboard = ({ setAlert }) => {
     providerOptions // required
   })
 
+  const [tab, setTab] = React.useState('Lottery')
+
   const [walletAddress, setWalletAddress] = React.useState(null)
   const [walletBalance, setWalletBalance] = React.useState(null)
   const [mintValue, setMintValue] = React.useState(2)
@@ -115,10 +117,10 @@ const Dashboard = ({ setAlert }) => {
     await contract.methods.placeBid(bidValue).send({ from: walletAddress })
   }
 
-  const mintNFT = async (stackValue) => {
-    let contract = new window.web3.eth.Contract(stackAbi, '0xeF84982226130c86af2F22473a3b1891Dd7F7495')
-    await contract.methods.stakeForTickets(stackValue).send({ from: walletAddress })
-  }
+  // const mintNFT = async (stackValue) => {
+  //   let contract = new window.web3.eth.Contract(stackAbi, '0xeF84982226130c86af2F22473a3b1891Dd7F7495')
+  //   await contract.methods.stakeForTickets(stackValue).send({ from: walletAddress })
+  // }
 
   return (
     <div className='customer-dashboard bg-dark text-white'>
@@ -157,7 +159,7 @@ const Dashboard = ({ setAlert }) => {
         </div>
       </div>
       <div className='container'>
-        <div className='row pt-5'>
+        {/* <div className='row pt-5'>
           <div className='col-md-6'>
             <div className='box-shadow rounded-lg p-3 m-3' style={{ minHeight: '280px' }}>
               <div className='h2 text-center'>Mint Your Node NFT</div>
@@ -214,52 +216,113 @@ const Dashboard = ({ setAlert }) => {
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
         <div className='row py-5'>
           <div className='col-md-3'></div>
           <div className='col-md-6'>
-            <div className='box-shadow rounded-lg p-3 m-3'>
-              <div className='h2 text-center'>Auction</div>
-              <div className='text-primary text-center mb-3'>Top 20 Bids</div>
-              {[1, 2, 3, 4, 5, 6].map((item, index) =>
-                <div key={index} className='d-flex justify-content-between py-2 border-bottom border-secondary'>
-                  <div className='text-primary'>
-                    <span className='mr-3'>{index + 1}</span>
-                    <span className='badge rounded-pill bg-primary text-primary font-18 mr-2'>8</span>
-                    <span>0x8be3...37e</span>
+            <div className='box-shadow rounded-lg'>
+              <div className='row'>
+                <div className='col-md-4 text-center cursor-pointer' onClick={() => setTab('Lottery')}>
+                  <div className={'p-2 ' + (tab === 'Lottery' ? 'box-shadow-bold' : null)}>
+                    Lottery
                   </div>
-                  <div className='mr-4'>2000 STACK (FAKE)</div>
                 </div>
-              )}
-              {top20Bids.map((item, index) =>
-                <div key={index} className='d-flex justify-content-between py-2 border-bottom border-secondary'>
-                  <div className='text-primary'>
-                    <span className='mr-3'>{index + 1}</span>
-                    <span className='badge rounded-pill bg-primary text-primary font-18 mr-2'>8</span>
-                    <span>0x8be3...37e</span>
+                <div className='col-md-4 text-center cursor-pointer' onClick={() => setTab('Auction')}>
+                  <div className={'p-2 ' + (tab === 'Auction' ? 'box-shadow-bold' : null)}>
+                    Auction
                   </div>
-                  <div className='mr-4'>2000 STACK</div>
                 </div>
-              )}
-              <div className='text-center mt-4'>
-                <span className='text-primary'>Place your bid: </span>
-                <span className='h3 border-bottom mx-2'>
-                  <input
-                    type='number'
-                    value={bidValue}
-                    className='stack-input h3'
-                    onChange={e => setBidValue(e.target.value)}
-                  />
-                </span>
-                <span>STACK</span>
-              </div>
-              <div className='text-center mt-2 pt-1'>
-                <button onClick={() => placeBid()} className='btn btn-primary rounded-pill px-4'>Submit</button>
-              </div>
-              <div className='text-center my-3 px-5'>
-                The auction will end at a random time on a random day before DATE
               </div>
             </div>
+            {tab === 'Lottery'
+              ?
+              <div className='box-shadow rounded-lg p-3'>
+                <div className='h2 text-center'>But Tickets</div>
+                <div className='text-center'>
+                  <i onClick={() => mintValueDecrement()} className="fa fa-minus h3 mr-3 font-weight-lighter cursor-pointer"></i>
+                  <span>
+                    <span className='h1 font-weight-bolder'>{mintValue}/</span>
+                    <span className='h3'>{mintMaxValue}</span>
+                  </span>
+                  <i onClick={() => mintValueIncrement()} className="fa fa-plus h3 ml-3 font-weight-lighter cursor-pointer"></i>
+                </div>
+                <div className='row'>
+                  <div className='col-6'>
+                    <div className='text-primary text-right'>Price:</div>
+                  </div>
+                  <div className='col-6 pl-0'>
+                    <span className='text-white'>400</span>
+                    <span className='text-primary'> STACK</span>
+                  </div>
+                </div>
+                <div className='row'>
+                  <div className='col-6'>
+                    <div className='text-primary text-right'>Total Amount to Buy:</div>
+                  </div>
+                  <div className='col-6 pl-0'>
+                    <span className='text-white'>2000</span>
+                    <span className='text-primary'> STACK</span>
+                  </div>
+                </div>
+                <div className='row'>
+                  <div className='col-6'>
+                    <div className='text-primary text-right'>Wallet Balance:</div>
+                  </div>
+                  <div className='col-6 pl-0'>
+                    <span className='text-white'>{walletBalance}</span>
+                    <span className='text-primary'> STACK</span>
+                  </div>
+                </div>
+                <div className='text-center mt-3'>
+                  <button className='btn btn-primary rounded-pill' onClick={() => setShowModal('block')}>Buy Ticket</button>
+                </div>
+              </div>
+              : tab === 'Auction'
+                ?
+                <div className='box-shadow rounded-lg p-3'>
+                  <div className='h2 text-center'>Auction</div>
+                  <div className='text-primary text-center mb-3'>Top 20 Bids</div>
+                  {[1, 2, 3, 4, 5, 6].map((item, index) =>
+                    <div key={index} className='d-flex justify-content-between py-2 border-bottom border-secondary'>
+                      <div className='text-primary'>
+                        <span className='mr-3'>{index + 1}</span>
+                        <span className='badge rounded-pill bg-primary text-primary font-18 mr-2'>8</span>
+                        <span>0x8be3...37e</span>
+                      </div>
+                      <div className='mr-4'>2000 STACK (FAKE)</div>
+                    </div>
+                  )}
+                  {top20Bids.map((item, index) =>
+                    <div key={index} className='d-flex justify-content-between py-2 border-bottom border-secondary'>
+                      <div className='text-primary'>
+                        <span className='mr-3'>{index + 1}</span>
+                        <span className='badge rounded-pill bg-primary text-primary font-18 mr-2'>8</span>
+                        <span>0x8be3...37e</span>
+                      </div>
+                      <div className='mr-4'>2000 STACK</div>
+                    </div>
+                  )}
+                  <div className='text-center mt-4'>
+                    <span className='text-primary'>Place your bid: </span>
+                    <span className='h3 border-bottom mx-2'>
+                      <input
+                        type='number'
+                        value={bidValue}
+                        className='stack-input h3'
+                        onChange={e => setBidValue(e.target.value)}
+                      />
+                    </span>
+                    <span>STACK</span>
+                  </div>
+                  <div className='text-center mt-2 pt-1'>
+                    <button onClick={() => placeBid()} className='btn btn-primary rounded-pill px-4'>Submit</button>
+                  </div>
+                  <div className='text-center my-3 px-5'>
+                    The auction will end at a random time on a random day before DATE
+                  </div>
+                </div>
+                : null
+            }
           </div>
           <div className='col-md-3'></div>
         </div>
@@ -286,7 +349,7 @@ const Dashboard = ({ setAlert }) => {
               </div>
             </div>
             <div className='modal-footer box-shadow'>
-              <button onClick={() => setShowModal('none')} className='width-60 btn btn-primary rounded-pill btn-sm'>Mint</button>
+              <button onClick={() => setShowModal('none')} className='width-60 btn btn-primary rounded-pill btn-sm'>Buy</button>
               <button onClick={() => setShowModal('none')} className='width-60 btn btn-primary rounded-pill btn-sm'>Cancel</button>
             </div>
           </div>
