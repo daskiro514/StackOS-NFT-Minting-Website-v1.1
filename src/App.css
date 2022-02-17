@@ -25,6 +25,10 @@
   filter: contrast(1);
 }
 
+.header-nav-border-bottom {
+  border-bottom: 2px solid #2abfff
+}
+
 .cursor-pointer {
   cursor: pointer;
 }
