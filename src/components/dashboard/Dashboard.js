@@ -7,8 +7,10 @@ import ellipseAddress from '../../utils/ellipseAddress'
 import { setAlert } from '../../actions/alert'
 import stackNFTGenesisAbi from '../../abi/stack_nft_genesis.json'
 import stackOsAbi from '../../abi/stack_os.json'
+import stackNFT2SonAbi from '../../abi/stack_nft2_son.json'
 const stackNFTGenesisContractAddress = '0xbD72cFc3d0055438BE59662Dbf581e90B21b6e45'
 const stackOSContractAddress = '0x980111ae1B84E50222C8843e3A7a038F36Fecd2b'
+const stackNFT2SonContractAddress = '0x8aD072Dc246F72A1f632d5FD79da12EcbF87713a'
 
 const Dashboard = ({ setAlert }) => {
 
@@ -119,10 +121,15 @@ const Dashboard = ({ setAlert }) => {
   React.useEffect(() => {
     let _walletAddress = localStorage.getItem('walletAddress')
     if (_walletAddress !== 'null') {
-      setWalletAddress(localStorage.getItem('walletAddress'))
+      setWalletAddress(_walletAddress)
     }
     loadWeb3()
-    getPageData()
+  }, [])
+
+  React.useEffect(() => {
+    if (walletAddress) {
+      getPageData()
+    }
   }, [walletAddress])
 
   const placeBid = async () => {
@@ -134,6 +141,40 @@ const Dashboard = ({ setAlert }) => {
     let contract = new window.web3.eth.Contract(stackNFTGenesisAbi, '0xeF84982226130c86af2F22473a3b1891Dd7F7495')
     await contract.methods.stakeForTickets(numberOfTicket).send({ from: walletAddress })
   }
+
+  const [mintValue, setMintValue] = React.useState(1)
+  const mintMaxValue = 50
+
+  const mintValueIncrement = () => {
+    if (mintValue + 1 > mintMaxValue) {
+      setAlert('Maximum Value Overflow', 'warning')
+      return
+    }
+    setMintValue(mintValue + 1)
+  }
+
+  const mintValueDecrement = () => {
+    if (mintValue - 1 < 1) {
+      setAlert('It can not be set as 0', 'warning')
+      return
+    }
+    setMintValue(mintValue - 1)
+  }
+
+  const [mintPrice, setMintPrice] = React.useState(1)
+
+  const getMintPrice = async () => {
+    if (window.web3.eth) {
+      let contract = new window.web3.eth.Contract(stackNFT2SonAbi, stackNFT2SonContractAddress)
+      let _mintPrice = await contract.methods.mintPrice().call()
+      _mintPrice = _mintPrice / 10 ** 18
+      setMintPrice(_mintPrice)
+    }
+  }
+
+  React.useEffect(() => {
+    getMintPrice()
+  }, [])
 
   return (
     <div className='customer-dashboard bg-dark text-white'>
@@ -312,8 +353,59 @@ const Dashboard = ({ setAlert }) => {
           </div>
         </div>
         :
-        <div className='p-5 text-center m-5'>
-          Will be available soon.
+        <div className='container'>
+          <div className='row'>
+            <div className='col-md-3'></div>
+            <div className='col-md-6'>
+              <div className='py-5 text-center'>
+                <div className='box-shadow rounded-lg p-3' style={{ minHeight: '280px' }}>
+                  <div className='h2 text-center'>Mint Your Node NFT</div>
+                  <div className='text-center text-primary'>Current Node Generation: 1</div>
+                  <div className='text-center'>
+                    <i onClick={() => mintValueDecrement()} className="fa fa-minus h3 mr-3 font-weight-lighter cursor-pointer"></i>
+                    <span>
+                      <span className='h1 font-weight-bolder'>{mintValue}/</span>
+                      <span className='h3'>{mintMaxValue}</span>
+                    </span>
+                    <i onClick={() => mintValueIncrement()} className="fa fa-plus h3 ml-3 font-weight-lighter cursor-pointer"></i>
+                  </div>
+                  <div className='row'>
+                    <div className='col-6'>
+                      <div className='text-primary text-right'>Price:</div>
+                    </div>
+                    <div className='col-6 pl-0 text-left'>
+                      <span className='text-white'>{mintPrice}</span>
+                      <span className='text-primary'> STACK</span>
+                    </div>
+                  </div>
+                  <div className='row'>
+                    <div className='col-6'>
+                      <div className='text-primary text-right'>Wallet Balance:</div>
+                    </div>
+                    <div className='col-6 pl-0 text-left'>
+                      <span className='text-white'>{walletBalance}</span>
+                      <span className='text-primary'> STACK</span>
+                    </div>
+                  </div>
+                  <div className='row'>
+                    <div className='col-6'>
+                      <div className='text-primary text-right'>Total Amount to Buy:</div>
+                    </div>
+                    <div className='col-6 pl-0 text-left'>
+                      <span className='text-white'>{mintPrice * mintValue}</span>
+                      <span className='text-primary'> STACK</span>
+                    </div>
+                  </div>
+                  <div className='row mb-3'>
+                    <div className='col-md-12 text-center mt-3'>
+                      <button className='btn btn-primary rounded-pill' onClick={() => setShowModal('block')}>Mint NFTs</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className='col-md-3'></div>
+          </div>
         </div>
       }
 
