@@ -8,9 +8,19 @@ import { setAlert } from '../../actions/alert'
 import stackNFTGenesisAbi from '../../abi/stack_nft_genesis.json'
 import stackOsAbi from '../../abi/stack_os.json'
 import stackNFT2SonAbi from '../../abi/stack_nft2_son.json'
+import polygonUsdtAbi from '../../abi/polygon_usdt.json'
+import polygonUsdcAbi from '../../abi/polygon_usdc.json'
+import polygonDaiAbi from '../../abi/polygon_dai.json'
+import dfynRouter02Abi from '../../abi/dfyn_router02.json'
+import stackUsdcPairAbi from '../../abi/stack_usdc_pair.json'
 const stackNFTGenesisContractAddress = '0xbD72cFc3d0055438BE59662Dbf581e90B21b6e45'
 const stackOSContractAddress = '0x980111ae1B84E50222C8843e3A7a038F36Fecd2b'
 const stackNFT2SonContractAddress = '0x8aD072Dc246F72A1f632d5FD79da12EcbF87713a'
+const polygonUsdtAddress = '0xc2132d05d31c914a87c6611c10748aeb04b58e8f'
+const polygonUsdcAddress = '0x2791bca1f2de4661ed88a30c99a7a9449aa84174'
+const polygonDaiAddress = '0x490e379c9cff64944be82b849f8fd5972c7999a7'
+const dfynRouter02Address = '0xA102072A4C07F06EC3B4900FDC4C7B80b6c57429'
+const stackUsdcPairAddress = '0x4efd21b3e10110bD4d88A8b3ad34EeB4D4B1FcFD'
 
 const Dashboard = ({ setAlert }) => {
 
@@ -28,7 +38,10 @@ const Dashboard = ({ setAlert }) => {
   const [tab, setTab] = React.useState('Lottery')
 
   const [walletAddress, setWalletAddress] = React.useState(null)
-  const [walletBalance, setWalletBalance] = React.useState(null)
+  const [walletStackBalance, setWalletStackBalance] = React.useState(null)
+  const [walletUsdtBalance, setWalletUsdtBalance] = React.useState(null)
+  const [walletUsdcBalance, setWalletUsdcBalance] = React.useState(null)
+  const [walletDaiBalance, setWalletDaiBalance] = React.useState(null)
   const ticketPrice = 400
   const [numberOfTicket, setnumberOfTicket] = React.useState(1)
   const [bidValue, setBidValue] = React.useState(1000)
@@ -84,11 +97,26 @@ const Dashboard = ({ setAlert }) => {
 
   const getWalletBalance = async () => {
     if (window.web3.eth) {
-      let contract = new window.web3.eth.Contract(stackOsAbi, stackOSContractAddress)
+      let contractForStack = new window.web3.eth.Contract(stackOsAbi, stackOSContractAddress)
+      let contractForUsdt = new window.web3.eth.Contract(polygonUsdtAbi, polygonUsdtAddress)
+      let contractForUsdc = new window.web3.eth.Contract(polygonUsdcAbi, polygonUsdcAddress)
+      let contractForDai = new window.web3.eth.Contract(polygonDaiAbi, polygonDaiAddress)
       if (walletAddress) {
-        let balance = await contract.methods.balanceOf(walletAddress).call()
-        balance = balance / 10 ** 18
-        setWalletBalance(balance)
+        let stackBalance = await contractForStack.methods.balanceOf(walletAddress).call()
+        stackBalance = stackBalance / 10 ** 18
+        setWalletStackBalance(stackBalance)
+
+        let usdtBalance = await contractForUsdt.methods.balanceOf(walletAddress).call()
+        usdtBalance = usdtBalance / 10 ** 6
+        setWalletUsdtBalance(usdtBalance)
+
+        let usdcBalance = await contractForUsdc.methods.balanceOf(walletAddress).call()
+        usdcBalance = usdcBalance / 10 ** 6
+        setWalletUsdcBalance(usdcBalance)
+
+        let daiBalance = await contractForDai.methods.balanceOf(walletAddress).call()
+        daiBalance = daiBalance / 10 ** 18
+        setWalletDaiBalance(daiBalance)
       } else {
         setWalletAddress()
       }
@@ -142,39 +170,81 @@ const Dashboard = ({ setAlert }) => {
     await contract.methods.stakeForTickets(numberOfTicket).send({ from: walletAddress })
   }
 
-  const [mintValue, setMintValue] = React.useState(1)
-  const mintMaxValue = 50
+  const [mintValue, setMintValue] = React.useState(100)
+  const [mintPrice, setMintPrice] = React.useState(null)
+  const [mintUsdPrice, setMintUsdPrice] = React.useState(null)
+  const [mintStackPrice, setMintStackPrice] = React.useState(null)
 
-  const mintValueIncrement = () => {
-    if (mintValue + 1 > mintMaxValue) {
-      setAlert('Maximum Value Overflow', 'warning')
-      return
-    }
-    setMintValue(mintValue + 1)
-  }
-
-  const mintValueDecrement = () => {
-    if (mintValue - 1 < 1) {
-      setAlert('It can not be set as 0', 'warning')
-      return
-    }
-    setMintValue(mintValue - 1)
-  }
-
-  const [mintPrice, setMintPrice] = React.useState(1)
-
-  const getMintPrice = async () => {
+  const getMintUsdPrice = async () => {
     if (window.web3.eth) {
       let contract = new window.web3.eth.Contract(stackNFT2SonAbi, stackNFT2SonContractAddress)
-      let _mintPrice = await contract.methods.mintPrice().call()
-      _mintPrice = _mintPrice / 10 ** 18
-      setMintPrice(_mintPrice)
+      let _mintUsdPrice = await contract.methods.mintPrice().call()
+      _mintUsdPrice = _mintUsdPrice / 10 ** 18
+      setMintUsdPrice(_mintUsdPrice)
     }
   }
 
   React.useEffect(() => {
-    getMintPrice()
+    getMintUsdPrice()
   }, [])
+
+  const getUsdcAndStackReserves = async () => {
+    if (window.web3.eth) {
+      let contract = new window.web3.eth.Contract(stackUsdcPairAbi, stackUsdcPairAddress)
+      let _reserves = await contract.methods.getReserves().call()
+      let _usdcReserve = _reserves[0]
+      let _stackReserve = _reserves[1]
+
+      let contract1 = new window.web3.eth.Contract(dfynRouter02Abi, dfynRouter02Address)
+      let _mintStackPrice = await contract1.methods.getAmountOut(mintUsdPrice * 10 ** 6, _usdcReserve, _stackReserve).call()
+      _mintStackPrice = _mintStackPrice / 10 ** 18
+      setMintStackPrice(_mintStackPrice)
+    }
+  }
+
+  React.useEffect(() => {
+    if (mintUsdPrice) {
+      getUsdcAndStackReserves()
+    }
+  }, [mintUsdPrice])
+
+  const [currency, setCurrency] = React.useState('STACK')
+  const [walletBalance, setWalletBalance] = React.useState(null)
+
+  React.useEffect(() => {
+    setMintPrice(mintUsdPrice)
+    if (currency === 'STACK') {
+      setWalletBalance(walletStackBalance)
+      setMintPrice(mintStackPrice)
+    }
+    if (currency === 'USDT') {
+      setWalletBalance(walletUsdtBalance)
+    }
+    if (currency === 'USDC') {
+      setWalletBalance(walletUsdcBalance)
+    }
+    if (currency === 'DAI') {
+      setWalletBalance(walletDaiBalance)
+    }
+  }, [currency, mintUsdPrice, mintStackPrice, walletStackBalance, walletUsdtBalance, walletUsdcBalance, walletDaiBalance])
+
+  React.useEffect(() => {
+    setWalletBalance(walletStackBalance)
+    setMintPrice(mintStackPrice)
+  }, [walletStackBalance, mintStackPrice])
+
+  const mintNFT = async () => {
+    let contract = new window.web3.eth.Contract(stackNFT2SonAbi, stackNFT2SonContractAddress)
+    if (currency === 'STACK') {
+      await contract.methods.mint(mintValue).send({ from: walletAddress })
+    } else if (currency === 'USDT') {
+      await contract.methods.mintForUsd(mintValue, polygonUsdtAddress).send({ from: walletAddress })
+    } else if (currency === 'USDC') {
+      await contract.methods.mintForUsd(mintValue, polygonUsdcAddress).send({ from: walletAddress })
+    } else if (currency === 'DAI') {
+      await contract.methods.mintForUsd(mintValue, polygonDaiAddress).send({ from: walletAddress })
+    }
+  }
 
   return (
     <div className='customer-dashboard bg-dark text-white'>
@@ -264,7 +334,7 @@ const Dashboard = ({ setAlert }) => {
                       <div className='text-primary text-right'>Wallet Balance:</div>
                     </div>
                     <div className='col-6 pl-0'>
-                      <span className='text-white'>{walletBalance}</span>
+                      <span className='text-white'>{walletStackBalance}</span>
                       <span className='text-primary'> STACK</span>
                     </div>
                   </div>
@@ -280,7 +350,7 @@ const Dashboard = ({ setAlert }) => {
                   <div className='text-center mt-3'>
                     <button
                       className='btn btn-primary rounded-pill'
-                      disabled={numberOfTicket * ticketPrice > walletBalance ? true : false}
+                      disabled={numberOfTicket * ticketPrice > walletStackBalance ? true : false}
                       onClick={() => buyTickets()}
                     >
                       Buy Ticket
@@ -317,7 +387,7 @@ const Dashboard = ({ setAlert }) => {
                         <div className='text-primary text-right'>Wallet Balance:</div>
                       </div>
                       <div className='col-6 pl-0'>
-                        <span className='text-white'>{walletBalance}</span>
+                        <span className='text-white'>{walletStackBalance}</span>
                         <span className='text-primary'> STACK</span>
                       </div>
                     </div>
@@ -337,7 +407,7 @@ const Dashboard = ({ setAlert }) => {
                       <button
                         onClick={() => placeBid()}
                         className='btn btn-primary rounded-pill px-4'
-                        disabled={bidValue > walletBalance ? true : false}
+                        disabled={bidValue > walletStackBalance ? true : false}
                       >
                         Submit
                       </button>
@@ -360,14 +430,25 @@ const Dashboard = ({ setAlert }) => {
               <div className='py-5 text-center'>
                 <div className='box-shadow rounded-lg p-3' style={{ minHeight: '280px' }}>
                   <div className='h2 text-center'>Mint Your Node NFT</div>
-                  <div className='text-center text-primary'>Current Node Generation: 1</div>
-                  <div className='text-center'>
-                    <i onClick={() => mintValueDecrement()} className="fa fa-minus h3 mr-3 font-weight-lighter cursor-pointer"></i>
-                    <span>
-                      <span className='h1 font-weight-bolder'>{mintValue}/</span>
-                      <span className='h3'>{mintMaxValue}</span>
+                  <div className='text-center text-primary my-2'>Current Node Generation: 1</div>
+                  <div className='text-center my-2'>
+                    <span className='h3 border-bottom mx-2'>
+                      <input
+                        type='number'
+                        value={mintValue}
+                        className='stack-input h3'
+                        onChange={e => setMintValue(e.target.value)}
+                      />
                     </span>
-                    <i onClick={() => mintValueIncrement()} className="fa fa-plus h3 ml-3 font-weight-lighter cursor-pointer"></i>
+                    <span>NFT</span>
+                  </div>
+                  <div className='text-center my-2'>
+                    <select className='currency-select h4 rounded-lg' value={currency} onChange={e => setCurrency(e.target.value)}>
+                      <option value='STACK'>STACK</option>
+                      <option value='USDT'>USDT</option>
+                      <option value='USDC'>USDC</option>
+                      <option value='DAI'>DAI</option>
+                    </select>
                   </div>
                   <div className='row'>
                     <div className='col-6'>
@@ -375,7 +456,7 @@ const Dashboard = ({ setAlert }) => {
                     </div>
                     <div className='col-6 pl-0 text-left'>
                       <span className='text-white'>{mintPrice}</span>
-                      <span className='text-primary'> STACK</span>
+                      <span className='text-primary'> {currency}</span>
                     </div>
                   </div>
                   <div className='row'>
@@ -384,7 +465,7 @@ const Dashboard = ({ setAlert }) => {
                     </div>
                     <div className='col-6 pl-0 text-left'>
                       <span className='text-white'>{walletBalance}</span>
-                      <span className='text-primary'> STACK</span>
+                      <span className='text-primary'> {currency}</span>
                     </div>
                   </div>
                   <div className='row'>
@@ -393,12 +474,18 @@ const Dashboard = ({ setAlert }) => {
                     </div>
                     <div className='col-6 pl-0 text-left'>
                       <span className='text-white'>{mintPrice * mintValue}</span>
-                      <span className='text-primary'> STACK</span>
+                      <span className='text-primary'> {currency}</span>
                     </div>
                   </div>
                   <div className='row mb-3'>
                     <div className='col-md-12 text-center mt-3'>
-                      <button className='btn btn-primary rounded-pill' onClick={() => setShowModal('block')}>Mint NFTs</button>
+                      <button
+                        className='btn btn-primary rounded-pill'
+                        onClick={() => mintNFT()}
+                        disabled={mintPrice * mintValue > walletBalance ? true : false}
+                      >
+                        Mint NFTs
+                      </button>
                     </div>
                   </div>
                 </div>

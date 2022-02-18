@@ -78,6 +78,16 @@
   text-align: right;
 }
 
+.currency-select {
+  min-width: 110px;
+  background-color: #16171b;
+  color: white;
+  text-align: right;
+  border: 1px solid #2abfff;
+  text-align: center;
+  box-shadow: 0 0 10px 10px rgb(23 162 184 / 15%);
+}
+
 .width-60 {
   min-width: 60px;
 }
