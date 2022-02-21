@@ -36,6 +36,7 @@
 .btn-primary {
   background-color: #2abfff;
   border-color: #2abfff;
+  min-width: 130px;
 }
 
 .bg-primary {
@@ -48,6 +49,10 @@
 
 .font-18 {
   font-size: 18px;
+}
+
+.font-22 {
+  font-size: 22px;
 }
 
 .left-image {
