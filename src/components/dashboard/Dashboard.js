@@ -76,6 +76,7 @@ const Dashboard = ({ setAlert }) => {
 
     setWalletAddress(_accounts[0].toLowerCase())
     localStorage.setItem('walletAddress', _accounts[0].toLowerCase())
+    window.location.reload()
   }
 
   const disconnectWallet = async () => {
