@@ -28,11 +28,21 @@ const LotteryBox = ({ walletAddress, walletStackBalance, setAlert }) => {
   }
 
   const buyTickets = async () => {
+    // let preContract = new window.web3.eth.Contract(stackOsAbi, stackOSContractAddress)
+    // await preContract.methods.approve(stackNFTGenesisContractAddress, numberOfTicket).send({ from: walletAddress })
+
+    // let contract = new window.web3.eth.Contract(stackNFTGenesisAbi, stackNFTGenesisContractAddress)
+    // await contract.methods.stakeForTickets(numberOfTicket).send({ from: walletAddress })
+
     let preContract = new window.web3.eth.Contract(stackOsAbi, stackOSContractAddress)
-    await preContract.methods.approve(stackNFTGenesisContractAddress, numberOfTicket).send({ from: walletAddress })
-    
-    let contract = new window.web3.eth.Contract(stackNFTGenesisAbi, stackNFTGenesisContractAddress)
-    await contract.methods.stakeForTickets(numberOfTicket).send({ from: walletAddress })
+    preContract.methods.approve(stackNFTGenesisContractAddress, numberOfTicket).send({ from: walletAddress }).on('receipt', function (receipt) {
+      alert(receipt);
+      let contract = new window.web3.eth.Contract(stackNFTGenesisAbi, stackNFTGenesisContractAddress)
+      contract.methods.stakeForTickets(numberOfTicket).send({ from: walletAddress }).on('receipt', function (receipt) {
+        console.log(receipt);
+        let _hash = receipt.transactionHash
+      })
+    })
   }
 
   return (

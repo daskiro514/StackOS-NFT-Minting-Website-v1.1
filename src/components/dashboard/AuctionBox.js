@@ -60,17 +60,13 @@ const AuctionBox = ({ walletAddress, walletStackBalance }) => {
   const placeBid = () => {
     let preContract = new window.web3.eth.Contract(stackOsAbi, stackOSContractAddress)
     preContract.methods.approve(stackNFTGenesisContractAddress, bidValue).send({ from: walletAddress }).on('receipt', function (receipt) {
-      alert(receipt);
+      console.log(receipt);
       let contract = new window.web3.eth.Contract(stackNFTGenesisAbi, stackNFTGenesisContractAddress)
       contract.methods.placeBid(bidValue).send({ from: walletAddress }).on('receipt', function (receipt) {
-        alert(receipt);
-        // if (receipt) {
-        //   toast.success("Success! Swap is succeed!!!  👌");
-        //   setIsChanging(false);
-        // }
+        console.log(receipt);
+        let _hash = receipt.transactionHash
       })
     })
-
     // let contract = new window.web3.eth.Contract(stackNFTGenesisAbi, stackNFTGenesisContractAddress)
     // await contract.methods.placeBid(bidValue).send({ from: walletAddress })
   }
