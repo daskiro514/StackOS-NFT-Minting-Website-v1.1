@@ -140,10 +140,10 @@ const Dashboard = ({ setAlert }) => {
       <div className='right-image'></div>
       <div className='container-fluid'>
         <div className='row bg-dark header-box-shadow'>
-          <div className='col-md-4 p-4'>
+          <div className='col-lg-4 p-4'>
             <img src={logo} alt='SETIMAGE' />
           </div>
-          <div className='col-md-4 text-center text-primary h3 p-3'>
+          <div className='col-lg-4 text-center text-primary h3 p-3'>
             <div className='d-flex justify-content-center cursor-pointer'>
               <div className={'mr-3 px-2 py-1 ' + (topTab === 'Gen0' ? 'header-nav-border-bottom' : '')} onClick={() => setTopTab('Gen0')}>
                 Gen0
@@ -153,7 +153,7 @@ const Dashboard = ({ setAlert }) => {
               </div>
             </div>
           </div>
-          <div className='col-md-4 text-right p-4'>
+          <div className='col-lg-4 text-right p-4'>
             {walletAddress
               ?
               <>
@@ -180,21 +180,21 @@ const Dashboard = ({ setAlert }) => {
         ?
         <div className='container'>
           <div className='row py-5'>
-            <div className='col-md-3'></div>
-            <div className='col-md-6'>
+            <div className='col-lg-3'></div>
+            <div className='col-lg-6'>
               <div className='box-shadow rounded-lg'>
                 <div className='row'>
-                  <div className='col-md-4 text-center cursor-pointer' onClick={() => setTab('Lottery')}>
+                  <div className='col-lg-4 text-center cursor-pointer' onClick={() => setTab('Lottery')}>
                     <div className={'p-2 ' + (tab === 'Lottery' ? 'box-shadow-bold' : null)}>
                       Lottery
                     </div>
                   </div>
-                  <div className='col-md-4 text-center cursor-pointer' onClick={() => setTab('Auction')}>
+                  <div className='col-lg-4 text-center cursor-pointer' onClick={() => setTab('Auction')}>
                     <div className={'p-2 ' + (tab === 'Auction' ? 'box-shadow-bold' : null)}>
                       Auction
                     </div>
                   </div>
-                  <div className='col-md-4 text-center cursor-pointer' onClick={() => setTab('Tickets')}>
+                  <div className='col-lg-4 text-center cursor-pointer' onClick={() => setTab('Tickets')}>
                     <div className={'p-2 ' + (tab === 'Tickets' ? 'box-shadow-bold' : null)}>
                       Tickets
                     </div>
@@ -224,14 +224,14 @@ const Dashboard = ({ setAlert }) => {
                     : null
               }
             </div>
-            <div className='col-md-3'></div>
+            <div className='col-lg-3'></div>
           </div>
         </div>
         :
         <div className='container'>
           <div className='row'>
-            <div className='col-md-3'></div>
-            <div className='col-md-6'>
+            <div className='col-lg-3'></div>
+            <div className='col-lg-6'>
               <MintBox
                 walletAddress={walletAddress}
                 walletStackBalance={walletStackBalance}
@@ -240,7 +240,7 @@ const Dashboard = ({ setAlert }) => {
                 walletDaiBalance={walletDaiBalance}
               />
             </div>
-            <div className='col-md-3'></div>
+            <div className='col-lg-3'></div>
           </div>
         </div>
       }

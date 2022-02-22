@@ -1,13 +1,16 @@
 import React from "react"
+import stackOsAbi from '../../abi/stack_os.json'
 import stackNFTGenesisAbi from '../../abi/stack_nft_genesis.json'
 import ellipseAddress from '../../utils/ellipseAddress'
 import Spinner from '../layout/Spinner'
+
+const stackOSContractAddress = '0x980111ae1B84E50222C8843e3A7a038F36Fecd2b'
 const stackNFTGenesisContractAddress = '0x7fD93DF7F2229cA6344b8aEb411785eDb378D2B5'
 var firstIntervalID = -1
 
 const AuctionBox = ({ walletAddress, walletStackBalance }) => {
 
-  const [bidValue, setBidValue] = React.useState(1000)
+  const [bidValue, setBidValue] = React.useState(1)
   const [top20Biders, setTop20Biders] = React.useState([])
   const [top20Bids, setTop20Bids] = React.useState([])
 
@@ -54,9 +57,22 @@ const AuctionBox = ({ walletAddress, walletStackBalance }) => {
     }
   }, [walletAddress])
 
-  const placeBid = async () => {
-    let contract = new window.web3.eth.Contract(stackNFTGenesisAbi, stackNFTGenesisContractAddress)
-    await contract.methods.placeBid(bidValue).send({ from: walletAddress })
+  const placeBid = () => {
+    let preContract = new window.web3.eth.Contract(stackOsAbi, stackOSContractAddress)
+    preContract.methods.approve(stackNFTGenesisContractAddress, bidValue).send({ from: walletAddress }).on('receipt', function (receipt) {
+      alert(receipt);
+      let contract = new window.web3.eth.Contract(stackNFTGenesisAbi, stackNFTGenesisContractAddress)
+      contract.methods.placeBid(bidValue).send({ from: walletAddress }).on('receipt', function (receipt) {
+        alert(receipt);
+        // if (receipt) {
+        //   toast.success("Success! Swap is succeed!!!  👌");
+        //   setIsChanging(false);
+        // }
+      })
+    })
+
+    // let contract = new window.web3.eth.Contract(stackNFTGenesisAbi, stackNFTGenesisContractAddress)
+    // await contract.methods.placeBid(bidValue).send({ from: walletAddress })
   }
 
   return (

@@ -139,7 +139,7 @@ const MintBox = ({ walletAddress, walletStackBalance, walletUsdtBalance, walletU
           </div>
         </div>
         <div className='row mb-3'>
-          <div className='col-md-12 text-center mt-3'>
+          <div className='col-lg-12 text-center mt-3'>
             <button
               className='btn btn-primary rounded-pill'
               onClick={() => mintNFT()}

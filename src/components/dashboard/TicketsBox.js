@@ -93,7 +93,7 @@ const TicketsBox = ({ walletAddress, setAlert, userTickets, lastGenerationAddres
       <div>
         <div className="m-4">
           <div className='row'>
-            <div className="col-md-12">
+            <div className="col-lg-12">
               {ticketsHeld.length > 0
                 ?
                 <div className="text-center">
@@ -117,7 +117,7 @@ const TicketsBox = ({ walletAddress, setAlert, userTickets, lastGenerationAddres
         </div>
 
         <div className='row my-3'>
-          <div className='col-md-4 text-center'>
+          <div className='col-lg-4 text-center'>
             <button
               className='btn btn-primary rounded-pill mt-2'
               onClick={() => claimReward()}
@@ -126,7 +126,7 @@ const TicketsBox = ({ walletAddress, setAlert, userTickets, lastGenerationAddres
               Claim NFTs
             </button>
           </div>
-          <div className='col-md-4 text-center'>
+          <div className='col-lg-4 text-center'>
             <button
               className='btn btn-primary rounded-pill mt-2'
               onClick={() => returnStake()}
@@ -135,7 +135,7 @@ const TicketsBox = ({ walletAddress, setAlert, userTickets, lastGenerationAddres
               Return Stake
             </button>
           </div>
-          <div className='col-md-4 text-center'>
+          <div className='col-lg-4 text-center'>
             <button
               className='btn btn-primary rounded-pill mt-2'
               onClick={() => transferTicket()}
