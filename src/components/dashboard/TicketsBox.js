@@ -1,7 +1,7 @@
 import React from "react"
 import stackNFTGenesisAbi from '../../abi/stack_nft_genesis.json'
 import winningTickets from "../../utils/winningTickets"
-const stackNFTGenesisContractAddress = '0xbD72cFc3d0055438BE59662Dbf581e90B21b6e45'
+const stackNFTGenesisContractAddress = '0x7fD93DF7F2229cA6344b8aEb411785eDb378D2B5'
 
 const TicketsBox = ({ walletAddress, setAlert, userTickets, lastGenerationAddress }) => {
 
