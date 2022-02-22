@@ -3,6 +3,7 @@ import stackNFTGenesisAbi from '../../abi/stack_nft_genesis.json'
 import ellipseAddress from '../../utils/ellipseAddress'
 import Spinner from '../layout/Spinner'
 const stackNFTGenesisContractAddress = '0x7fD93DF7F2229cA6344b8aEb411785eDb378D2B5'
+var firstIntervalID = -1
 
 const AuctionBox = ({ walletAddress, walletStackBalance }) => {
 
@@ -11,6 +12,7 @@ const AuctionBox = ({ walletAddress, walletStackBalance }) => {
   const [top20Bids, setTop20Bids] = React.useState([])
 
   const getTop20Biders = async () => {
+    setTop20Biders([])
     if (window.web3.eth) {
       let contract = new window.web3.eth.Contract(stackNFTGenesisAbi, stackNFTGenesisContractAddress)
       let _top20Biders = []
@@ -35,6 +37,20 @@ const AuctionBox = ({ walletAddress, walletStackBalance }) => {
   React.useEffect(() => {
     if (walletAddress) {
       getTop20Biders()
+    }
+  }, [walletAddress])
+
+  React.useEffect(() => {
+    var intervalID = setInterval(async function () {
+      if (walletAddress) {
+        getTop20Biders()
+      }
+    }, 30 * 1000)
+  
+    if (firstIntervalID < 0) {
+      firstIntervalID = intervalID
+    } else {
+      clearInterval(intervalID)
     }
   }, [walletAddress])
 
