@@ -119,7 +119,7 @@ const TicketsBox = ({ walletAddress, setAlert, userTickets, lastGenerationAddres
         <div className='row my-3'>
           <div className='col-md-4 text-center'>
             <button
-              className='btn btn-primary rounded-pill'
+              className='btn btn-primary rounded-pill mt-2'
               onClick={() => claimReward()}
               disabled={ticketsWon.length === 0 ? true : false}
             >
@@ -128,7 +128,7 @@ const TicketsBox = ({ walletAddress, setAlert, userTickets, lastGenerationAddres
           </div>
           <div className='col-md-4 text-center'>
             <button
-              className='btn btn-primary rounded-pill'
+              className='btn btn-primary rounded-pill mt-2'
               onClick={() => returnStake()}
               disabled={ticketsLost.length === 0 ? true : false}
             >
@@ -137,7 +137,7 @@ const TicketsBox = ({ walletAddress, setAlert, userTickets, lastGenerationAddres
           </div>
           <div className='col-md-4 text-center'>
             <button
-              className='btn btn-primary rounded-pill'
+              className='btn btn-primary rounded-pill mt-2'
               onClick={() => transferTicket()}
               disabled={ticketsLost.length === 0 ? true : false}
             // data-toggle="modal" data-target="#myModal"

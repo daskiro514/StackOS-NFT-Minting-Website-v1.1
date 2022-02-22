@@ -46,7 +46,7 @@ const AuctionBox = ({ walletAddress, walletStackBalance }) => {
         getTop20Biders()
       }
     }, 30 * 1000)
-  
+
     if (firstIntervalID < 0) {
       firstIntervalID = intervalID
     } else {
@@ -75,7 +75,10 @@ const AuctionBox = ({ walletAddress, walletStackBalance }) => {
           </div>
         )
         :
-        <Spinner />
+        <>
+          <div className="text-center">You should connect your wallet.</div>
+          <Spinner />
+        </>
       }
       <div className='row mt-4'>
         <div className='col-6'>
