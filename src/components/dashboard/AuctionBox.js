@@ -8,16 +8,19 @@ const stackOSContractAddress = '0x980111ae1B84E50222C8843e3A7a038F36Fecd2b'
 const stackNFTGenesisContractAddress = '0x7fD93DF7F2229cA6344b8aEb411785eDb378D2B5'
 var firstIntervalID = -1
 
-const AuctionBox = ({ walletAddress, walletStackBalance }) => {
+const AuctionBox = ({ web3, walletAddress, walletStackBalance }) => {
 
   const [bidValue, setBidValue] = React.useState(1)
   const [top20Biders, setTop20Biders] = React.useState([])
   const [top20Bids, setTop20Bids] = React.useState([])
+  const [isLoading, setIsLoading] = React.useState(false)
 
   const getTop20Biders = async () => {
+    if (isLoading) return
+    setIsLoading(true)
     setTop20Biders([])
-    if (window.web3.eth) {
-      let contract = new window.web3.eth.Contract(stackNFTGenesisAbi, stackNFTGenesisContractAddress)
+    if (web3) {
+      let contract = new web3.eth.Contract(stackNFTGenesisAbi, stackNFTGenesisContractAddress)
       let _top20Biders = []
       let _top20Bids = []
 
@@ -35,6 +38,7 @@ const AuctionBox = ({ walletAddress, walletStackBalance }) => {
       setTop20Biders(_top20Biders)
       setTop20Bids(_top20Bids)
     }
+    setIsLoading(false)
   }
 
   React.useEffect(() => {
@@ -58,17 +62,12 @@ const AuctionBox = ({ walletAddress, walletStackBalance }) => {
   }, [walletAddress])
 
   const placeBid = () => {
-    let preContract = new window.web3.eth.Contract(stackOsAbi, stackOSContractAddress)
-    preContract.methods.approve(stackNFTGenesisContractAddress, bidValue).send({ from: walletAddress }).on('receipt', function (receipt) {
-      console.log(receipt);
-      let contract = new window.web3.eth.Contract(stackNFTGenesisAbi, stackNFTGenesisContractAddress)
-      contract.methods.placeBid(bidValue).send({ from: walletAddress }).on('receipt', function (receipt) {
-        console.log(receipt);
-        let _hash = receipt.transactionHash
-      })
+    console.log('before')
+    let preContract = new web3.eth.Contract(stackOsAbi, stackOSContractAddress)
+    preContract.methods.approve(stackNFTGenesisContractAddress, bidValue * 10 ** 8 + '0000000000').send({ from: walletAddress }).then(() => {
+      let contract = new web3.eth.Contract(stackNFTGenesisAbi, stackNFTGenesisContractAddress)
+      contract.methods.placeBid(bidValue).send({ from: walletAddress })
     })
-    // let contract = new window.web3.eth.Contract(stackNFTGenesisAbi, stackNFTGenesisContractAddress)
-    // await contract.methods.placeBid(bidValue).send({ from: walletAddress })
   }
 
   return (

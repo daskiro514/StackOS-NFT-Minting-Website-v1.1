@@ -10,7 +10,7 @@ const polygonUsdtAddress = '0xc2132d05d31c914a87c6611c10748aeb04b58e8f'
 const polygonUsdcAddress = '0x2791bca1f2de4661ed88a30c99a7a9449aa84174'
 const polygonDaiAddress = '0x490e379c9cff64944be82b849f8fd5972c7999a7'
 
-const MintBox = ({ walletAddress, walletStackBalance, walletUsdtBalance, walletUsdcBalance, walletDaiBalance }) => {
+const MintBox = ({ walletAddress, web3, walletStackBalance, walletUsdtBalance, walletUsdcBalance, walletDaiBalance }) => {
   const [mintValue, setMintValue] = React.useState(100)
   const [currency, setCurrency] = React.useState('STACK')
   const [walletBalance, setWalletBalance] = React.useState(null)
@@ -42,8 +42,8 @@ const MintBox = ({ walletAddress, walletStackBalance, walletUsdtBalance, walletU
 
 
   const getMintUsdPrice = async () => {
-    if (window.web3.eth) {
-      let contract = new window.web3.eth.Contract(stackNFT2SonAbi, stackNFT2SonContractAddress)
+    if (web3.eth) {
+      let contract = new web3.eth.Contract(stackNFT2SonAbi, stackNFT2SonContractAddress)
       let _mintUsdPrice = await contract.methods.mintPrice().call()
       _mintUsdPrice = _mintUsdPrice / 10 ** 18
       setMintUsdPrice(_mintUsdPrice)
@@ -55,13 +55,13 @@ const MintBox = ({ walletAddress, walletStackBalance, walletUsdtBalance, walletU
   }, [])
 
   const getUsdcAndStackReserves = React.useCallback(async () => {
-    if (window.web3.eth) {
-      let contract = new window.web3.eth.Contract(stackUsdcPairAbi, stackUsdcPairAddress)
+    if (web3.eth) {
+      let contract = new web3.eth.Contract(stackUsdcPairAbi, stackUsdcPairAddress)
       let _reserves = await contract.methods.getReserves().call()
       let _usdcReserve = _reserves[0]
       let _stackReserve = _reserves[1]
 
-      let contract1 = new window.web3.eth.Contract(dfynRouter02Abi, dfynRouter02Address)
+      let contract1 = new web3.eth.Contract(dfynRouter02Abi, dfynRouter02Address)
       let _mintStackPrice = await contract1.methods.getAmountOut(mintUsdPrice * 10 ** 6, _usdcReserve, _stackReserve).call()
       _mintStackPrice = _mintStackPrice / 10 ** 18
       setMintStackPrice(_mintStackPrice)
@@ -75,7 +75,7 @@ const MintBox = ({ walletAddress, walletStackBalance, walletUsdtBalance, walletU
   }, [mintUsdPrice, getUsdcAndStackReserves])
 
   const mintNFT = async () => {
-    let contract = new window.web3.eth.Contract(stackNFT2SonAbi, stackNFT2SonContractAddress)
+    let contract = new web3.eth.Contract(stackNFT2SonAbi, stackNFT2SonContractAddress)
     if (currency === 'STACK') {
       await contract.methods.mint(mintValue).send({ from: walletAddress })
     } else if (currency === 'USDT') {

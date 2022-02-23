@@ -5,7 +5,7 @@ import stackNFTGenesisAbi from '../../abi/stack_nft_genesis.json'
 const stackOSContractAddress = '0x980111ae1B84E50222C8843e3A7a038F36Fecd2b'
 const stackNFTGenesisContractAddress = '0x7fD93DF7F2229cA6344b8aEb411785eDb378D2B5'
 
-const LotteryBox = ({ walletAddress, walletStackBalance, setAlert }) => {
+const LotteryBox = ({ walletAddress, web3, walletStackBalance, setAlert }) => {
 
   const ticketPrice = 400
   const maxNumberOfTicket = 50
@@ -27,21 +27,11 @@ const LotteryBox = ({ walletAddress, walletStackBalance, setAlert }) => {
     setnumberOfTicket(numberOfTicket - 1)
   }
 
-  const buyTickets = async () => {
-    // let preContract = new window.web3.eth.Contract(stackOsAbi, stackOSContractAddress)
-    // await preContract.methods.approve(stackNFTGenesisContractAddress, numberOfTicket).send({ from: walletAddress })
-
-    // let contract = new window.web3.eth.Contract(stackNFTGenesisAbi, stackNFTGenesisContractAddress)
-    // await contract.methods.stakeForTickets(numberOfTicket).send({ from: walletAddress })
-
-    let preContract = new window.web3.eth.Contract(stackOsAbi, stackOSContractAddress)
-    preContract.methods.approve(stackNFTGenesisContractAddress, numberOfTicket).send({ from: walletAddress }).on('receipt', function (receipt) {
-      alert(receipt);
-      let contract = new window.web3.eth.Contract(stackNFTGenesisAbi, stackNFTGenesisContractAddress)
-      contract.methods.stakeForTickets(numberOfTicket).send({ from: walletAddress }).on('receipt', function (receipt) {
-        console.log(receipt);
-        let _hash = receipt.transactionHash
-      })
+  const buyTickets = () => {
+    let preContract = new web3.eth.Contract(stackOsAbi, stackOSContractAddress)
+    preContract.methods.approve(stackNFTGenesisContractAddress, numberOfTicket).send({ from: walletAddress }).then(() => {
+      let contract = new web3.eth.Contract(stackNFTGenesisAbi, stackNFTGenesisContractAddress)
+      contract.methods.stakeForTickets(numberOfTicket).send({ from: walletAddress })
     })
   }
 

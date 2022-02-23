@@ -64,6 +64,7 @@ const Dashboard = ({ setAlert }) => {
   const [walletUsdtBalance, setWalletUsdtBalance] = React.useState(null)
   const [walletUsdcBalance, setWalletUsdcBalance] = React.useState(null)
   const [walletDaiBalance, setWalletDaiBalance] = React.useState(null)
+  const [web3, setWeb3] = React.useState(null)
 
   const connectWallet = async () => {
     let _provider = null
@@ -72,34 +73,39 @@ const Dashboard = ({ setAlert }) => {
 
     _provider = await web3Modal.connect()
     _web3 = new Web3(_provider)
+    setWeb3(_web3)
     _accounts = await _web3.eth.getAccounts()
 
     setWalletAddress(_accounts[0].toLowerCase())
     localStorage.setItem('walletAddress', _accounts[0].toLowerCase())
-    window.location.reload()
+    // window.location.reload()
   }
+
+  React.useEffect(() => {
+    connectWallet()
+  }, [])
 
   const disconnectWallet = async () => {
     setWalletAddress(null)
     localStorage.setItem('walletAddress', null)
   }
 
-  const loadWeb3 = async () => {
-    if (window.ethereum) {
-      window.web3 = new Web3(window.ethereum)
-    } else if (window.web3) {
-      window.web3 = new Web3(window.web3.currentProvider)
-    } else {
-      console.log("Non-Ethereum browser detected. You should consider trying MetaMask!")
-    }
-  }
+  // const loadWeb3 = async () => {
+  //   if (window.ethereum) {
+  //     window.web3 = new Web3(window.ethereum)
+  //   } else if (window.web3) {
+  //     window.web3 = new Web3(window.web3.currentProvider)
+  //   } else {
+  //     console.log("Non-Ethereum browser detected. You should consider trying MetaMask!")
+  //   }
+  // }
 
   const getWalletBalance = React.useCallback(async () => {
-    if (window.web3.eth) {
-      let contractForStack = new window.web3.eth.Contract(stackOsAbi, stackOSContractAddress)
-      let contractForUsdt = new window.web3.eth.Contract(polygonUsdtAbi, polygonUsdtAddress)
-      let contractForUsdc = new window.web3.eth.Contract(polygonUsdcAbi, polygonUsdcAddress)
-      let contractForDai = new window.web3.eth.Contract(polygonDaiAbi, polygonDaiAddress)
+    if (web3) {
+      let contractForStack = new web3.eth.Contract(stackOsAbi, stackOSContractAddress)
+      let contractForUsdt = new web3.eth.Contract(polygonUsdtAbi, polygonUsdtAddress)
+      let contractForUsdc = new web3.eth.Contract(polygonUsdcAbi, polygonUsdcAddress)
+      let contractForDai = new web3.eth.Contract(polygonDaiAbi, polygonDaiAddress)
       if (walletAddress) {
         let stackBalance = await contractForStack.methods.balanceOf(walletAddress).call()
         stackBalance = stackBalance / 10 ** 18
@@ -118,14 +124,14 @@ const Dashboard = ({ setAlert }) => {
         setWalletDaiBalance(daiBalance)
       }
     }
-  }, [walletAddress])
+  }, [web3, walletAddress])
 
   React.useEffect(() => {
     let _walletAddress = localStorage.getItem('walletAddress')
     if (_walletAddress !== 'null') {
       setWalletAddress(_walletAddress)
     }
-    loadWeb3()
+    // loadWeb3()
   }, [])
 
   React.useEffect(() => {
@@ -205,6 +211,7 @@ const Dashboard = ({ setAlert }) => {
                 ?
                 <LotteryBox
                   walletAddress={walletAddress}
+                  web3={web3}
                   walletStackBalance={walletStackBalance}
                   setAlert={setAlert}
                 />
@@ -212,11 +219,13 @@ const Dashboard = ({ setAlert }) => {
                   ?
                   <AuctionBox
                     walletAddress={walletAddress}
+                    web3={web3}
                     walletStackBalance={walletStackBalance}
                   />
                   : tab === 'Tickets' ?
                     <TicketsBox
                       walletAddress={walletAddress}
+                      web3={web3}
                       setAlert={setAlert}
                       userTickets={userTickets}
                       lastGenerationAddress={lastGenerationAddress}
@@ -234,6 +243,7 @@ const Dashboard = ({ setAlert }) => {
             <div className='col-lg-6'>
               <MintBox
                 walletAddress={walletAddress}
+                web3={web3}
                 walletStackBalance={walletStackBalance}
                 walletUsdtBalance={walletUsdtBalance}
                 walletUsdcBalance={walletUsdcBalance}

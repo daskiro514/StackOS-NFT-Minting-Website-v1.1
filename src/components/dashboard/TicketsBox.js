@@ -3,7 +3,7 @@ import stackNFTGenesisAbi from '../../abi/stack_nft_genesis.json'
 import winningTickets from "../../utils/winningTickets"
 const stackNFTGenesisContractAddress = '0x7fD93DF7F2229cA6344b8aEb411785eDb378D2B5'
 
-const TicketsBox = ({ walletAddress, setAlert, userTickets, lastGenerationAddress }) => {
+const TicketsBox = ({ walletAddress, web3, setAlert, userTickets, lastGenerationAddress }) => {
 
   const [userTicket, setUserTicket] = React.useState({
     ticketsBought: [],
@@ -72,19 +72,19 @@ const TicketsBox = ({ walletAddress, setAlert, userTickets, lastGenerationAddres
   }, [userTickets])
 
   const claimReward = async () => {
-    let contract = new window.web3.eth.Contract(stackNFTGenesisAbi, stackNFTGenesisContractAddress)
+    let contract = new web3.eth.Contract(stackNFTGenesisAbi, stackNFTGenesisContractAddress)
     await contract.methods.claimReward(ticketsWon).send({ from: walletAddress })
   }
 
   const returnStake = async () => {
-    let contract = new window.web3.eth.Contract(stackNFTGenesisAbi, stackNFTGenesisContractAddress)
+    let contract = new web3.eth.Contract(stackNFTGenesisAbi, stackNFTGenesisContractAddress)
     await contract.methods.returnStake(ticketsLost).send({ from: walletAddress })
   }
 
   const [sendWalletAddress, setSendWalletAddress] = React.useState('')
 
   const transferTicket = async () => {
-    let contract = new window.web3.eth.Contract(stackNFTGenesisAbi, stackNFTGenesisContractAddress)
+    let contract = new web3.eth.Contract(stackNFTGenesisAbi, stackNFTGenesisContractAddress)
     await contract.methods.transferTicket(ticketsLost, lastGenerationAddress).send({ from: walletAddress })
   }
 
